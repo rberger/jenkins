@@ -75,6 +75,16 @@ class Chef
     end
 
     #
+    # The password of the user.
+    #
+    # @param [String] arg
+    # @return [String]
+    #
+    def password(arg = nil)
+      set_or_return(:source, arg, kind_of: String)
+    end
+
+    #
     # The list of public keys for this user.
     #
     # @param [String, Array<String>] arg
@@ -146,6 +156,9 @@ class Chef
             keys = new org.jenkinsci.main.modules.cli.auth.ssh.UserPropertyImpl('#{new_resource.public_keys.join("\n")}')
             user.addProperty(keys)
 
+            if('#{new_resource.password}' != '') {
+            user.addProperty(hudson.security.HudsonPrivateSecurityRealm.Details.fromPlainPassword('#{new_resource.password}'))
+            }
             user.save()
           EOH
         end
